@@ -1,5 +1,6 @@
 package org.example.gateway;
 
+import java.util.function.Function;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -26,18 +27,15 @@ public class GatewayRequestHandler {
 
         final Mono<Hello> helloMono = helloExchange.flatMap(rsp -> rsp.bodyToMono(Hello.class));
 
-
-        final Mono<ClientResponse> byeExchange = webClient.get()
-            .uri("/by?id={id}&name={name}", id, name)
-            .exchange();
-
-        final Mono<Hello> byeMono = byeExchange.flatMap(rsp -> rsp.bodyToMono(Hello.class));
-
-
+        final Mono<Bye> byeMono = helloMono.flatMap(hello ->
+            webClient.get()
+                .uri("/bye?id={id}&name={name}", hello.getId()+1000, hello.getName()+"-proxied")
+                .exchange()
+        ).flatMap(rsp -> rsp.bodyToMono(Bye.class));
 
 
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-            .body(Mono.just("OK"), String.class);
+            .body(byeMono, Bye.class);
 
     }
 }

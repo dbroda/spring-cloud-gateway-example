@@ -1,12 +1,12 @@
 package org.example.gateway;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@NoArgsConstructor
 public class Hello {
 
-    private final String name;
-    private final Long id;
+    private String name;
+    private Long id;
 }
