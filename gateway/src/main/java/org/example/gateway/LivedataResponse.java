@@ -1,12 +1,13 @@
 package org.example.gateway;
 
-import lombok.Builder;
+import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @NoArgsConstructor
-public class Bye {
+@Data
+class LivedataResponse {
 
-    private String name;
+    List<LivedataGameHead> gameHeads;
+
 }

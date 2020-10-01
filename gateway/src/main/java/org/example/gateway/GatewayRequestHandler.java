@@ -1,6 +1,7 @@
 package org.example.gateway;
 
-import java.util.function.Function;
+import java.util.List;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -13,7 +14,12 @@ import reactor.core.publisher.Mono;
 
 public class GatewayRequestHandler {
 
-    private final  WebClient webClient = WebClient.builder().baseUrl("http://localhost:18888").build();
+    private final WebClient webClient = WebClient.builder().baseUrl("http://localhost:18888")
+        .build();
+
+
+    private final WebClient ldClient = WebClient.builder().baseUrl("http://livedata-core.gazeta.pl")
+        .build();
 
 
     public Mono<ServerResponse> greet(ServerRequest request) {
@@ -27,15 +33,17 @@ public class GatewayRequestHandler {
 
         final Mono<Hello> helloMono = helloExchange.flatMap(rsp -> rsp.bodyToMono(Hello.class));
 
-        final Mono<Bye> byeMono = helloMono.flatMap(hello ->
-            webClient.get()
-                .uri("/bye?id={id}&name={name}", hello.getId()+1000, hello.getName()+"-proxied")
+        final var livedataMono = helloMono.flatMap(hello ->
+            ldClient.get()
+                .uri("/livedata/football/eventhead/v1?languageId=23&ids={id}", hello.getId())
                 .exchange()
-        ).flatMap(rsp -> rsp.bodyToMono(Bye.class));
+
+        ).flatMap(rsp -> rsp.bodyToMono(List.class));
+
 
 
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-            .body(byeMono, Bye.class);
+            .body(livedataMono, List.class);
 
     }
 }

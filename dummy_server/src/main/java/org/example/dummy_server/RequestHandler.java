@@ -14,7 +14,7 @@ public class RequestHandler {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
             .body(Mono.just(Hello.builder()
                 .id(request.queryParam("id").map(Long::parseLong).orElseThrow())
-                .name(request.queryParam("name").orElseThrow())
+                .name(request.queryParam("name").orElseThrow()+"-from-hello")
                 .build()), Hello.class);
 
     }

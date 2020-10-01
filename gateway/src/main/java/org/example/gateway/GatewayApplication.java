@@ -30,6 +30,6 @@ public class GatewayApplication {
     public RouterFunction<ServerResponse> handleConfig(GatewayRequestHandler gatewayRequestHandler) {
 
         return RouterFunctions
-            .route(RequestPredicates.GET("/yo/{id}/{name}"), gatewayRequestHandler::greet);
+            .route(RequestPredicates.GET("/hi/{id}/{name}"), gatewayRequestHandler::greet);
     }
 }
